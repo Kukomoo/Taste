@@ -526,6 +526,66 @@ select {
   color: #667085;
 }
 
+.timeline {
+  display: grid;
+  gap: 14px;
+  position: relative;
+}
+
+.timeline-card {
+  border-left: 4px solid var(--accent);
+  background: #fff;
+  border-radius: 8px;
+  border-top: 1px solid #e3e7ef;
+  border-right: 1px solid #e3e7ef;
+  border-bottom: 1px solid #e3e7ef;
+  padding: 16px;
+}
+
+.timeline-card.active {
+  background: color-mix(in srgb, var(--accent) 8%, white);
+}
+
+.timeline-card > span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.timeline-card small {
+  display: block;
+  color: #667085;
+  margin-top: 12px;
+}
+
+.archive-list {
+  display: grid;
+  gap: 8px;
+}
+
+.archive-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid #e3e7ef;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.archive-row strong,
+.archive-row span {
+  display: block;
+}
+
+.archive-row span {
+  margin-top: 4px;
+  color: #667085;
+  font-size: 13px;
+}
+
 @media (max-width: 860px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -563,6 +623,11 @@ select {
   }
 
   .gallery-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .archive-row {
     align-items: stretch;
     flex-direction: column;
   }

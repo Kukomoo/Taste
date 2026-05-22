@@ -5,6 +5,8 @@ import { useTasteState } from "./hooks/useTasteState";
 import { ProjectMode } from "./components/ProjectMode";
 import { GrowthMode } from "./components/GrowthMode";
 import { InspirationMode } from "./components/InspirationMode";
+import { ResearchMode } from "./components/ResearchMode";
+import { ArchiveMode } from "./components/ArchiveMode";
 import { Button } from "./components/ui";
 
 const modeOrder: Mode[] = ["project", "growth", "research", "inspiration", "archive"];
@@ -45,6 +47,10 @@ export function App() {
           <GrowthMode state={state} setState={setState} />
         ) : state.activeMode === "inspiration" ? (
           <InspirationMode state={state} setState={setState} />
+        ) : state.activeMode === "research" ? (
+          <ResearchMode state={state} setState={setState} />
+        ) : state.activeMode === "archive" ? (
+          <ArchiveMode state={state} setState={setState} />
         ) : (
           <main className="mode-page placeholder-mode">
             <section className="hero-panel">

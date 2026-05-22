@@ -87,3 +87,15 @@ export function randomInspiration(state: AppState) {
       return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     })[0];
 }
+
+export function researchSessions(state: AppState) {
+  return [...state.sessions].sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+}
+
+export function archivedCaptures(state: AppState) {
+  return state.captures.filter((capture) => capture.archived);
+}
+
+export function archiveCleanupCandidates(state: AppState) {
+  return archivedCaptures(state).filter((capture) => capture.revisitCount === 0);
+}
