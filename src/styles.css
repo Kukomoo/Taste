@@ -159,6 +159,22 @@ select {
   min-width: 0;
 }
 
+.onboarding-strip {
+  width: min(1180px, calc(100vw - 320px));
+  margin: 18px auto 0;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, white);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 8%, white);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.onboarding-strip span {
+  color: #566176;
+}
+
 .mode-page {
   width: min(1180px, calc(100vw - 320px));
   margin: 0 auto;
@@ -282,6 +298,53 @@ select {
 .memory-callout {
   color: #344054;
   font-size: 14px;
+}
+
+.inline-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inline-form input,
+.capture-form input,
+.capture-form textarea {
+  border: 1px solid #d6dce8;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  min-width: 0;
+}
+
+.project-form input:first-child {
+  width: 210px;
+}
+
+.project-form input:nth-child(2) {
+  width: 300px;
+}
+
+.capture-composer {
+  margin-top: 18px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #e3e7ef;
+  border-radius: 8px;
+  box-shadow: 0 16px 50px rgba(31, 41, 55, 0.06);
+}
+
+.capture-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) 150px minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.capture-form textarea {
+  grid-column: 1 / -2;
+  min-height: 76px;
+  resize: vertical;
 }
 
 .digest-panel,
@@ -547,7 +610,14 @@ select {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
-  background: color-mix(in srgb, var(--accent) 15%, white);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, white), #ffffff),
+    repeating-linear-gradient(45deg, transparent 0 12px, rgba(255, 255, 255, 0.4) 12px 24px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .inspiration-card.span-2 img {
@@ -658,6 +728,12 @@ select {
     padding: 16px;
   }
 
+  .onboarding-strip {
+    width: calc(100% - 32px);
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .hero-panel,
   .quick-create,
   .focus-card,
@@ -678,6 +754,14 @@ select {
   .gallery-toolbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .capture-form {
+    grid-template-columns: 1fr;
+  }
+
+  .capture-form textarea {
+    grid-column: auto;
   }
 
   .archive-row {

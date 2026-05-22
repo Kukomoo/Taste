@@ -89,7 +89,7 @@ export const seedState: AppState = {
       id: "c5",
       title: "Brutalist Copenhagen studio website",
       type: "screenshot",
-      thumbnail: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80",
+      thumbnail: "https://images.unsplash.com/photo-1545235617-9465d2a55698?auto=format&fit=crop&w=900&q=80",
       modeHints: ["inspiration"],
       tags: ["ui", "branding", "typography"],
       note: "Love the bold typography.",

@@ -43,6 +43,10 @@ export function App() {
       </aside>
 
       <div className="content">
+        <section className="onboarding-strip">
+          <strong>Prototype status</strong>
+          <span>Create a project, save your first capture, switch modes, then use the command simulator to test voice-style flows.</span>
+        </section>
         {state.activeMode === "project" ? (
           <ProjectMode state={state} setState={setState} />
         ) : state.activeMode === "growth" ? (

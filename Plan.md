@@ -83,3 +83,15 @@ Deliverables:
 - Responsive UI pass.
 - Full test run and browser verification.
 - Final commit.
+
+## Sprint 6 - Real Capture Inputs and Onboarding Polish
+
+Goal: Make the prototype usable with user-entered project and capture data.
+
+Deliverables:
+
+- Lightweight onboarding/status strip.
+- Project creation form.
+- Capture creation form with title, URL, note, tags, and type.
+- Tests for form-backed action behavior.
+- Full test run and browser verification.
