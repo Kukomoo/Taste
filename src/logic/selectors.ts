@@ -67,3 +67,23 @@ export function growthFocus(state: AppState) {
 export function neverTriedGrowth(state: AppState) {
   return growthCaptures(state).filter((capture) => !capture.growthStatus || capture.growthStatus === "untried");
 }
+
+export function inspirationCaptures(state: AppState, filter = "all") {
+  return state.captures.filter((capture) => {
+    if (capture.archived) return false;
+    const isVisual = capture.type === "screenshot" || capture.modeHints.includes("inspiration");
+    if (!isVisual) return false;
+    if (filter === "all") return true;
+    if (filter === "project") return capture.projectId === state.activeProjectId;
+    return capture.tags.includes(filter);
+  });
+}
+
+export function randomInspiration(state: AppState) {
+  return [...inspirationCaptures(state)]
+    .sort((a, b) => {
+      const revisitScore = a.revisitCount - b.revisitCount;
+      if (revisitScore !== 0) return revisitScore;
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    })[0];
+}

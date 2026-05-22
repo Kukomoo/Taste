@@ -118,3 +118,20 @@ export function endSession(state: AppState): AppState {
     )
   };
 }
+
+export function createMoodboard(state: AppState, captureIds: string[], name = "New moodboard"): AppState {
+  if (captureIds.length === 0) return state;
+  return {
+    ...state,
+    moodboards: [
+      {
+        id: makeId("m"),
+        name,
+        projectId: state.activeProjectId,
+        captureIds,
+        createdAt: now()
+      },
+      ...state.moodboards
+    ]
+  };
+}
