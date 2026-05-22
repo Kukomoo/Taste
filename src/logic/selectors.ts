@@ -99,3 +99,15 @@ export function archivedCaptures(state: AppState) {
 export function archiveCleanupCandidates(state: AppState) {
   return archivedCaptures(state).filter((capture) => capture.revisitCount === 0);
 }
+
+export function activeCluster(state: AppState) {
+  return state.clusters.find((cluster) => cluster.id === state.activeClusterId);
+}
+
+export function clusterNodes(state: AppState, clusterId: string) {
+  return state.nodes.filter((node) => node.clusterId === clusterId);
+}
+
+export function latestCluster(state: AppState) {
+  return state.clusters[0];
+}

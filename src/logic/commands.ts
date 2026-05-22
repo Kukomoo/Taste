@@ -1,4 +1,4 @@
-import { addCapture, endSession, setMode, startSession } from "./actions";
+import { addCapture, endSession, setMode, startRecordingCluster, startSession, stopRecordingCluster } from "./actions";
 import { exportAllData } from "./export";
 import { randomInspiration, randomProjectMemory } from "./selectors";
 import type { AppState, Mode } from "../types";
@@ -7,6 +7,8 @@ export type CommandIntent =
   | "save"
   | "start_session"
   | "end_session"
+  | "start_recording"
+  | "stop_recording"
   | "random_memory"
   | "switch_mode"
   | "export_all"
@@ -33,6 +35,8 @@ const modeWords: Record<string, Mode> = {
 export function parseCommand(input: string): ParsedCommand {
   const normalized = input.toLowerCase().replace(/[^\w\s]/g, "").trim();
   if (normalized.includes("save this")) return { intent: "save" };
+  if (normalized.includes("start recording") || normalized.includes("record now")) return { intent: "start_recording" };
+  if (normalized.includes("stop recording") || normalized === "stop" || normalized.includes("stop and break")) return { intent: "stop_recording" };
   if (normalized.includes("start session")) return { intent: "start_session" };
   if (normalized.includes("end session")) return { intent: "end_session" };
   if (normalized.includes("random memory") || normalized.includes("random inspiration")) return { intent: "random_memory" };
@@ -65,6 +69,12 @@ export function runCommand(state: AppState, input: string): { state: AppState; m
       return { state: startSession(state, state.activeMode === "project" ? "project" : "research"), message: "Session started." };
     case "end_session":
       return { state: endSession(state), message: "Session ended." };
+    case "start_recording": {
+      const source = input.toLowerCase().includes("youtube") ? "YouTube video" : "Current screen";
+      return { state: startRecordingCluster(state, source, input), message: `Recording ${source}. Tracking frames, audio, transcript, and prompts.` };
+    }
+    case "stop_recording":
+      return { state: stopRecordingCluster(state, input), message: "Recording stopped. Cluster generated with source, keyframes, audio, transcript, prompt, and summary nodes." };
     case "random_memory": {
       const memory = state.activeMode === "inspiration" ? randomInspiration(state) : randomProjectMemory(state);
       return { state, message: memory ? `Random memory: ${memory.title}` : "No memory available yet." };

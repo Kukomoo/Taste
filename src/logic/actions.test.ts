@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { seedState } from "../data/seed";
-import { addCapture, createProject } from "./actions";
+import { addCapture, createProject, startRecordingCluster, stopRecordingCluster } from "./actions";
 
 describe("state actions", () => {
   it("creates a user-named project and makes it active", () => {
@@ -37,5 +37,13 @@ describe("state actions", () => {
   it("uses fallback capture title when user input is empty", () => {
     const next = addCapture(seedState, { title: " ", type: "link", modeHints: ["project"] });
     expect(next.captures[0].title).toBe("Untitled save");
+  });
+
+  it("turns a recording into one cluster with individual extracted nodes", () => {
+    const recording = startRecordingCluster(seedState, "YouTube video", "Hey Kukomo, start recording this YouTube video now");
+    const processed = stopRecordingCluster(recording, "Stop and break it down");
+    expect(processed.clusters[0].status).toBe("ready");
+    expect(processed.clusters[0].nodeIds).toHaveLength(6);
+    expect(new Set(processed.nodes.slice(0, 6).map((node) => node.clusterId))).toEqual(new Set([processed.clusters[0].id]));
   });
 });

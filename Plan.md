@@ -95,3 +95,15 @@ Deliverables:
 - Capture creation form with title, URL, note, tags, and type.
 - Tests for form-backed action behavior.
 - Full test run and browser verification.
+
+## Sprint 7 - Kukomo Command Assistant Experience
+
+Goal: Reframe the product around voice and keyboard commands that record triggered moments into clustered memory.
+
+Deliverables:
+
+- Memory cluster and node data model.
+- Record and stop commands.
+- Simulated extraction into source, keyframe, audio, transcript, prompt, and summary nodes.
+- Command-first assistant cockpit.
+- Browser smoke test for record/stop flow.

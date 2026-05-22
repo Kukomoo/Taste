@@ -2,6 +2,8 @@ export type Mode = "project" | "growth" | "research" | "inspiration" | "archive"
 
 export type CaptureType = "link" | "screenshot" | "clip" | "note" | "voice" | "file";
 
+export type MemoryNodeType = "source" | "keyframe" | "audio" | "transcript" | "prompt" | "summary";
+
 export type ProjectStatus = "active" | "paused" | "archived";
 
 export type GrowthStatus = "untried" | "tried" | "skipped" | "not_relevant";
@@ -54,6 +56,30 @@ export interface Moodboard {
   createdAt: string;
 }
 
+export interface MemoryNode {
+  id: string;
+  clusterId: string;
+  type: MemoryNodeType;
+  title: string;
+  content: string;
+  timestampLabel?: string;
+  thumbnail?: string;
+  tags: string[];
+  createdAt: string;
+}
+
+export interface MemoryCluster {
+  id: string;
+  title: string;
+  source: string;
+  projectId?: string;
+  status: "recording" | "processing" | "ready";
+  startedAt: string;
+  endedAt?: string;
+  nodeIds: string[];
+  commandTrail: string[];
+}
+
 export interface VoiceCommands {
   wakePhrase: string;
   saveThis: string;
@@ -69,6 +95,9 @@ export interface AppState {
   captures: Capture[];
   sessions: Session[];
   moodboards: Moodboard[];
+  clusters: MemoryCluster[];
+  nodes: MemoryNode[];
+  activeClusterId?: string;
   currentSessionId?: string;
   voiceCommands: VoiceCommands;
 }

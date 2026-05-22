@@ -125,8 +125,71 @@ export const seedState: AppState = {
     }
   ],
   moodboards: [],
+  clusters: [
+    {
+      id: "cluster_1",
+      title: "YouTube style teardown - calm dashboard walkthrough",
+      source: "https://youtube.com/watch?v=demo-dashboard",
+      projectId: "p1",
+      status: "ready",
+      startedAt: "2026-05-21T18:00:00.000Z",
+      endedAt: "2026-05-21T18:07:00.000Z",
+      nodeIds: ["n1", "n2", "n3", "n4", "n5"],
+      commandTrail: ["Hey Kukomo, start recording this YouTube video now", "Kukomo, stop and break it down"]
+    }
+  ],
+  nodes: [
+    {
+      id: "n1",
+      clusterId: "cluster_1",
+      type: "source",
+      title: "Original YouTube source",
+      content: "Captured source URL, title, timing window, and project context.",
+      tags: ["youtube", "source"],
+      createdAt: "2026-05-21T18:00:00.000Z"
+    },
+    {
+      id: "n2",
+      clusterId: "cluster_1",
+      type: "keyframe",
+      title: "Keyframe 00:42",
+      content: "Dense interface, low-chrome navigation, bright status accents, and airy chart spacing.",
+      timestampLabel: "00:42",
+      thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80",
+      tags: ["keyframe", "layout"],
+      createdAt: "2026-05-21T18:01:00.000Z"
+    },
+    {
+      id: "n3",
+      clusterId: "cluster_1",
+      type: "audio",
+      title: "Extracted audio track",
+      content: "Voiceover tone: calm, technical, concise. Background audio is low and unobtrusive.",
+      tags: ["audio", "tone"],
+      createdAt: "2026-05-21T18:03:00.000Z"
+    },
+    {
+      id: "n4",
+      clusterId: "cluster_1",
+      type: "transcript",
+      title: "Transcript excerpt",
+      content: "The dashboard should make the next best action obvious without forcing the user to inspect every metric.",
+      timestampLabel: "03:18",
+      tags: ["transcript", "ux"],
+      createdAt: "2026-05-21T18:04:00.000Z"
+    },
+    {
+      id: "n5",
+      clusterId: "cluster_1",
+      type: "prompt",
+      title: "Reverse-engineered style prompt",
+      content: "Design a calm analytics dashboard with sparse navigation, confident typography, cool neutral surfaces, precise blue status accents, generous chart spacing, and subtle command-first assistant controls.",
+      tags: ["prompt", "style"],
+      createdAt: "2026-05-21T18:06:00.000Z"
+    }
+  ],
   voiceCommands: {
-    wakePhrase: "Hey TASTE",
+    wakePhrase: "Hey Kukomo",
     saveThis: "save this",
     startSession: "start session",
     endSession: "end session",

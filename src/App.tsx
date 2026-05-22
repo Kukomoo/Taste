@@ -9,6 +9,7 @@ import { ResearchMode } from "./components/ResearchMode";
 import { ArchiveMode } from "./components/ArchiveMode";
 import { Button } from "./components/ui";
 import { CommandCenter } from "./components/CommandCenter";
+import { AssistantCockpit } from "./components/AssistantCockpit";
 
 const modeOrder: Mode[] = ["project", "growth", "research", "inspiration", "archive"];
 
@@ -20,10 +21,10 @@ export function App() {
     <div className={`app-shell accent-${meta.accent}`}>
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">T</div>
+          <div className="brand-mark">K</div>
           <div>
-            <strong>TASTE</strong>
-            <span>intent-aware memory</span>
+            <strong>Kukomo</strong>
+            <span>command memory assistant</span>
           </div>
         </div>
         <nav className="mode-nav" aria-label="Modes">
@@ -44,9 +45,10 @@ export function App() {
 
       <div className="content">
         <section className="onboarding-strip">
-          <strong>Prototype status</strong>
-          <span>Create a project, save your first capture, switch modes, then use the command simulator to test voice-style flows.</span>
+          <strong>Always listening by permission</strong>
+          <span>Voice and keyboard commands create traceable clusters. Nothing records until you explicitly trigger Kukomo.</span>
         </section>
+        <AssistantCockpit state={state} setState={setState} />
         {state.activeMode === "project" ? (
           <ProjectMode state={state} setState={setState} />
         ) : state.activeMode === "growth" ? (

@@ -1,4 +1,4 @@
-import type { AppState, Capture, GrowthStatus, Mode, Project, Session } from "../types";
+import type { AppState, Capture, GrowthStatus, MemoryCluster, MemoryNode, Mode, Project, Session } from "../types";
 
 const makeId = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 const now = () => new Date().toISOString();
@@ -133,5 +133,107 @@ export function createMoodboard(state: AppState, captureIds: string[], name = "N
       },
       ...state.moodboards
     ]
+  };
+}
+
+export function startRecordingCluster(state: AppState, source = "Current tab", command = "Hey Kukomo, record now"): AppState {
+  if (state.activeClusterId) return state;
+  const cluster: MemoryCluster = {
+    id: makeId("cluster"),
+    title: source.toLowerCase().includes("youtube") ? "YouTube recording in progress" : "Live recording in progress",
+    source,
+    projectId: state.activeProjectId,
+    status: "recording",
+    startedAt: now(),
+    nodeIds: [],
+    commandTrail: [command]
+  };
+  return {
+    ...state,
+    activeClusterId: cluster.id,
+    clusters: [cluster, ...state.clusters]
+  };
+}
+
+export function stopRecordingCluster(state: AppState, command = "Kukomo, stop recording"): AppState {
+  if (!state.activeClusterId) return state;
+  const cluster = state.clusters.find((item) => item.id === state.activeClusterId);
+  if (!cluster) return { ...state, activeClusterId: undefined };
+  const createdAt = now();
+  const nodes: MemoryNode[] = [
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "source",
+      title: "Source context",
+      content: `Recorded ${cluster.source} and attached it to the active project.`,
+      tags: ["source"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "keyframe",
+      title: "Keyframe set",
+      content: "Extracted visual beats for layout, typography, motion, color, and composition.",
+      timestampLabel: "00:05, 00:17, 00:31",
+      thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80",
+      tags: ["keyframe", "visual-scan"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "audio",
+      title: "Audio layer",
+      content: "Extracted audio track and detected speaker cadence, pacing, emphasis, and background sound bed.",
+      tags: ["audio", "cadence"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "transcript",
+      title: "Transcript",
+      content: "Generated a searchable transcript with timestamped concepts and quotable explanation moments.",
+      timestampLabel: "full track",
+      tags: ["transcript"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "prompt",
+      title: "Reverse-engineered style prompt",
+      content: "Create a high-fidelity interface in the captured style: identify composition, spacing, typography, interaction tone, color accents, media rhythm, and reusable component rules before generating.",
+      tags: ["prompt", "reverse-engineer"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "summary",
+      title: "Cluster summary",
+      content: "One recording became a reusable memory cluster with source, frames, audio, transcript, and generation prompts.",
+      tags: ["summary"],
+      createdAt
+    }
+  ];
+  return {
+    ...state,
+    activeClusterId: undefined,
+    nodes: [...nodes, ...state.nodes],
+    clusters: state.clusters.map((item) =>
+      item.id === cluster.id
+        ? {
+            ...item,
+            title: cluster.source.toLowerCase().includes("youtube") ? "YouTube video breakdown" : "Recording breakdown",
+            status: "ready",
+            endedAt: createdAt,
+            nodeIds: nodes.map((node) => node.id),
+            commandTrail: [...item.commandTrail, command]
+          }
+        : item
+    )
   };
 }
