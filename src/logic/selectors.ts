@@ -1,0 +1,46 @@
+import type { AppState, Capture, Mode } from "../types";
+
+export const modeMeta: Record<Mode, { label: string; verb: string; accent: string }> = {
+  project: { label: "Build", verb: "Ship projects faster", accent: "blue" },
+  growth: { label: "Improve", verb: "Act on saved growth ideas", accent: "green" },
+  research: { label: "Understand", verb: "Review learning trails", accent: "violet" },
+  inspiration: { label: "Create", verb: "Rediscover visual sparks", accent: "magenta" },
+  archive: { label: "Keep", verb: "Store without clutter", accent: "slate" }
+};
+
+export function activeProject(state: AppState) {
+  return state.projects.find((project) => project.id === state.activeProjectId) ?? state.projects[0];
+}
+
+export function projectCaptures(state: AppState, projectId = state.activeProjectId) {
+  return state.captures.filter((capture) => capture.projectId === projectId && !capture.archived);
+}
+
+export function projectSessions(state: AppState, projectId = state.activeProjectId) {
+  return state.sessions.filter((session) => session.projectId === projectId);
+}
+
+export function capturesByType(captures: Capture[]) {
+  return {
+    highlights: captures.filter((capture) => capture.pinned),
+    visuals: captures.filter((capture) => capture.type === "screenshot" || capture.modeHints.includes("inspiration")),
+    documents: captures.filter((capture) => capture.type !== "screenshot" && !capture.modeHints.includes("inspiration"))
+  };
+}
+
+export function digestItems(captures: Capture[]) {
+  return [...captures]
+    .sort((a, b) => {
+      const pinScore = Number(b.pinned) - Number(a.pinned);
+      if (pinScore !== 0) return pinScore;
+      const revisitScore = b.revisitCount - a.revisitCount;
+      if (revisitScore !== 0) return revisitScore;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+    .slice(0, 3);
+}
+
+export function randomProjectMemory(state: AppState) {
+  const candidates = projectCaptures(state).filter((capture) => capture.revisitCount <= 1);
+  return candidates[0] ?? projectCaptures(state)[0];
+}

@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/components/projectmode.tsx","./src/components/ui.tsx","./src/data/seed.ts","./src/hooks/usetastestate.ts","./src/logic/actions.ts","./src/logic/selectors.test.ts","./src/logic/selectors.ts"],"version":"5.9.3"}
