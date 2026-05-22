@@ -44,3 +44,26 @@ export function randomProjectMemory(state: AppState) {
   const candidates = projectCaptures(state).filter((capture) => capture.revisitCount <= 1);
   return candidates[0] ?? projectCaptures(state)[0];
 }
+
+export function growthCaptures(state: AppState) {
+  return state.captures.filter(
+    (capture) =>
+      !capture.archived &&
+      (capture.modeHints.includes("growth") ||
+        capture.tags.some((tag) => ["fitness", "routine", "health", "money", "focus", "journal"].includes(tag)))
+  );
+}
+
+export function growthFocus(state: AppState) {
+  return [...growthCaptures(state)]
+    .filter((capture) => capture.growthStatus !== "not_relevant" && capture.growthStatus !== "tried")
+    .sort((a, b) => {
+      const statusScore = Number(a.growthStatus === "untried") - Number(b.growthStatus === "untried");
+      if (statusScore !== 0) return statusScore;
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    })[0];
+}
+
+export function neverTriedGrowth(state: AppState) {
+  return growthCaptures(state).filter((capture) => !capture.growthStatus || capture.growthStatus === "untried");
+}
