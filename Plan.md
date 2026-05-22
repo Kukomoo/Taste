@@ -107,3 +107,16 @@ Deliverables:
 - Simulated extraction into source, keyframe, audio, transcript, prompt, and summary nodes.
 - Command-first assistant cockpit.
 - Browser smoke test for record/stop flow.
+
+## Sprint 8 - Browser Recording Pipeline Prototype
+
+Goal: Add a real browser-native capture path behind the Kukomo recording experience.
+
+Deliverables:
+
+- `getDisplayMedia` recording flow.
+- `MediaRecorder` stop-to-WebM artifact.
+- Canvas-based keyframe sampling from recorded video.
+- Cluster artifact attachment.
+- Permission and fallback states.
+- Tests and browser smoke.

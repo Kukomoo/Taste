@@ -46,4 +46,20 @@ describe("state actions", () => {
     expect(processed.clusters[0].nodeIds).toHaveLength(6);
     expect(new Set(processed.nodes.slice(0, 6).map((node) => node.clusterId))).toEqual(new Set([processed.clusters[0].id]));
   });
+
+  it("attaches browser recording artifact details to processed nodes", () => {
+    const recording = startRecordingCluster(seedState, "Current screen", "Record now");
+    const processed = stopRecordingCluster(recording, "Stop and break it down", {
+      videoUrl: "blob:local-recording",
+      videoSizeBytes: 2048,
+      durationMs: 4200,
+      keyframes: ["data:image/jpeg;base64,frame1", "data:image/jpeg;base64,frame2"],
+      audioStatus: "placeholder",
+      transcriptStatus: "placeholder"
+    });
+    const nodes = processed.nodes.filter((node) => node.clusterId === processed.clusters[0].id);
+    expect(nodes.some((node) => node.title === "Local video artifact" && node.content === "blob:local-recording")).toBe(true);
+    expect(nodes.find((node) => node.type === "keyframe")?.thumbnail).toBe("data:image/jpeg;base64,frame1");
+    expect(nodes.find((node) => node.type === "summary")?.content).toContain("2 keyframes");
+  });
 });

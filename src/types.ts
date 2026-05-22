@@ -68,6 +68,15 @@ export interface MemoryNode {
   createdAt: string;
 }
 
+export interface RecordingArtifact {
+  videoUrl?: string;
+  videoSizeBytes?: number;
+  durationMs?: number;
+  keyframes: string[];
+  transcriptStatus: "placeholder" | "ready";
+  audioStatus: "placeholder" | "ready";
+}
+
 export interface MemoryCluster {
   id: string;
   title: string;

@@ -1,7 +1,9 @@
 import { startRecordingCluster, stopRecordingCluster } from "../logic/actions";
+import { sampleVideoKeyframes, startBrowserRecording, type BrowserRecording } from "../capture/browserRecorder";
 import { activeCluster, clusterNodes, latestCluster } from "../logic/selectors";
 import type { AppState, MemoryNodeType } from "../types";
 import { Button } from "./ui";
+import { useRef, useState } from "react";
 
 const nodeLabels: Record<MemoryNodeType, string> = {
   source: "Source",
@@ -12,10 +14,66 @@ const nodeLabels: Record<MemoryNodeType, string> = {
   summary: "Summary"
 };
 
+interface RenderNode {
+  id: string;
+  type: MemoryNodeType;
+  title: string;
+  content: string;
+  thumbnail?: string;
+}
+
 export function AssistantCockpit({ state, setState }: { state: AppState; setState: (state: AppState) => void }) {
+  const recorderRef = useRef<BrowserRecording | null>(null);
+  const [captureStatus, setCaptureStatus] = useState("Browser capture ready. Permission appears only when you record.");
+  const [isProcessing, setIsProcessing] = useState(false);
   const recording = activeCluster(state);
   const cluster = recording ?? latestCluster(state);
   const nodes = cluster ? clusterNodes(state, cluster.id) : [];
+
+  const startRealRecording = async (source: string, command: string) => {
+    try {
+      setCaptureStatus("Requesting screen capture permission...");
+      recorderRef.current = await startBrowserRecording();
+      setState(startRecordingCluster(state, source, command));
+      setCaptureStatus("Recording live. Kukomo is buffering video and audio locally.");
+    } catch (error) {
+      recorderRef.current = null;
+      setState(startRecordingCluster(state, source, command));
+      setCaptureStatus(error instanceof Error ? `${error.message} Using simulated recording fallback.` : "Using simulated recording fallback.");
+    }
+  };
+
+  const stopAndProcess = async () => {
+    const recorder = recorderRef.current;
+    setIsProcessing(true);
+    try {
+      if (!recorder) {
+        setState(stopRecordingCluster(state, "Stop and break it down"));
+        setCaptureStatus("Processed simulated recording into cluster nodes.");
+        return;
+      }
+      setCaptureStatus("Stopping recorder and sampling keyframes...");
+      const recorded = await recorder.stop();
+      const keyframes = await sampleVideoKeyframes(recorded.url, 3);
+      setState(
+        stopRecordingCluster(state, "Stop and break it down", {
+          videoUrl: recorded.url,
+          videoSizeBytes: recorded.blob.size,
+          durationMs: recorded.durationMs,
+          keyframes,
+          audioStatus: "placeholder",
+          transcriptStatus: "placeholder"
+        })
+      );
+      setCaptureStatus(`Processed local recording into ${keyframes.length} keyframes and clustered nodes.`);
+    } catch (error) {
+      setState(stopRecordingCluster(state, "Stop and break it down"));
+      setCaptureStatus(error instanceof Error ? `${error.message} Processed fallback nodes instead.` : "Processed fallback nodes instead.");
+    } finally {
+      recorderRef.current = null;
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <section className={`assistant-cockpit ${recording ? "is-recording" : ""}`}>
@@ -36,15 +94,19 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
           <code>⌘K record youtube</code>
         </div>
         <div className="action-row">
-          <Button onClick={() => setState(startRecordingCluster(state, "YouTube video", "Hey Kukomo, start recording this YouTube video now"))} disabled={Boolean(recording)}>
+          <Button onClick={() => startRealRecording("YouTube video", "Hey Kukomo, start recording this YouTube video now")} disabled={Boolean(recording) || isProcessing}>
             Record YouTube
           </Button>
-          <Button variant="secondary" onClick={() => setState(startRecordingCluster(state, "Current screen", "Record now"))} disabled={Boolean(recording)}>
+          <Button variant="secondary" onClick={() => startRealRecording("Current screen", "Record now")} disabled={Boolean(recording) || isProcessing}>
             Record now
           </Button>
-          <Button variant="ghost" onClick={() => setState(stopRecordingCluster(state, "Stop and break it down"))} disabled={!recording}>
-            Stop and process
+          <Button variant="ghost" onClick={stopAndProcess} disabled={!recording || isProcessing}>
+            {isProcessing ? "Processing..." : "Stop and process"}
           </Button>
+        </div>
+        <div className="capture-status">
+          <span>{recording ? "Active capture" : "Capture idle"}</span>
+          <strong>{captureStatus}</strong>
         </div>
       </div>
 
@@ -55,11 +117,16 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
           <small>{cluster?.source ?? "Trigger recording to create the first cluster."}</small>
         </div>
         <div className="node-rail">
-          {(nodes.length > 0 ? nodes : placeholderNodes).map((node) => (
+          {(nodes.length > 0 ? nodes : placeholderNodes).map((node: RenderNode) => (
             <article className={`node-chip node-${node.type}`} key={node.id}>
               <span>{nodeLabels[node.type]}</span>
               <strong>{node.title}</strong>
-              <small>{node.content}</small>
+              {node.type === "source" && node.content.startsWith("blob:") ? (
+                <video className="node-video" src={node.content} controls muted />
+              ) : node.thumbnail ? (
+                <img className="node-thumb" src={node.thumbnail} alt="" />
+              ) : null}
+              <small>{node.content.startsWith("blob:") ? "Local WebM artifact stored for this browser session." : node.content}</small>
             </article>
           ))}
         </div>
@@ -68,7 +135,7 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
   );
 }
 
-const placeholderNodes = [
+const placeholderNodes: RenderNode[] = [
   { id: "p1", type: "source" as const, title: "Source", content: "URL and capture context" },
   { id: "p2", type: "keyframe" as const, title: "Keyframes", content: "Visual style scans" },
   { id: "p3", type: "audio" as const, title: "Audio", content: "Audio and pacing" },

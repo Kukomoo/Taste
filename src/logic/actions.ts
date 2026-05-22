@@ -1,4 +1,4 @@
-import type { AppState, Capture, GrowthStatus, MemoryCluster, MemoryNode, Mode, Project, Session } from "../types";
+import type { AppState, Capture, GrowthStatus, MemoryCluster, MemoryNode, Mode, Project, RecordingArtifact, Session } from "../types";
 
 const makeId = (prefix: string) => `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 const now = () => new Date().toISOString();
@@ -155,70 +155,12 @@ export function startRecordingCluster(state: AppState, source = "Current tab", c
   };
 }
 
-export function stopRecordingCluster(state: AppState, command = "Kukomo, stop recording"): AppState {
+export function stopRecordingCluster(state: AppState, command = "Kukomo, stop recording", artifact?: RecordingArtifact): AppState {
   if (!state.activeClusterId) return state;
   const cluster = state.clusters.find((item) => item.id === state.activeClusterId);
   if (!cluster) return { ...state, activeClusterId: undefined };
   const createdAt = now();
-  const nodes: MemoryNode[] = [
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "source",
-      title: "Source context",
-      content: `Recorded ${cluster.source} and attached it to the active project.`,
-      tags: ["source"],
-      createdAt
-    },
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "keyframe",
-      title: "Keyframe set",
-      content: "Extracted visual beats for layout, typography, motion, color, and composition.",
-      timestampLabel: "00:05, 00:17, 00:31",
-      thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80",
-      tags: ["keyframe", "visual-scan"],
-      createdAt
-    },
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "audio",
-      title: "Audio layer",
-      content: "Extracted audio track and detected speaker cadence, pacing, emphasis, and background sound bed.",
-      tags: ["audio", "cadence"],
-      createdAt
-    },
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "transcript",
-      title: "Transcript",
-      content: "Generated a searchable transcript with timestamped concepts and quotable explanation moments.",
-      timestampLabel: "full track",
-      tags: ["transcript"],
-      createdAt
-    },
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "prompt",
-      title: "Reverse-engineered style prompt",
-      content: "Create a high-fidelity interface in the captured style: identify composition, spacing, typography, interaction tone, color accents, media rhythm, and reusable component rules before generating.",
-      tags: ["prompt", "reverse-engineer"],
-      createdAt
-    },
-    {
-      id: makeId("node"),
-      clusterId: cluster.id,
-      type: "summary",
-      title: "Cluster summary",
-      content: "One recording became a reusable memory cluster with source, frames, audio, transcript, and generation prompts.",
-      tags: ["summary"],
-      createdAt
-    }
-  ];
+  const nodes = buildRecordingNodes(cluster, createdAt, artifact);
   return {
     ...state,
     activeClusterId: undefined,
@@ -236,4 +178,105 @@ export function stopRecordingCluster(state: AppState, command = "Kukomo, stop re
         : item
     )
   };
+}
+
+export function buildRecordingNodes(cluster: MemoryCluster, createdAt: string, artifact?: RecordingArtifact): MemoryNode[] {
+  const keyframeCount = artifact?.keyframes.length ?? 0;
+  return [
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "source",
+      title: "Source context",
+      content: artifact?.videoUrl
+        ? `Recorded ${cluster.source} as a local WebM artifact (${formatBytes(artifact.videoSizeBytes ?? 0)}, ${formatDuration(artifact.durationMs ?? 0)}).`
+        : `Recorded ${cluster.source} and attached it to the active project.`,
+      tags: ["source"],
+      createdAt
+    },
+    ...(artifact?.videoUrl
+      ? [
+          {
+            id: makeId("node"),
+            clusterId: cluster.id,
+            type: "source" as const,
+            title: "Local video artifact",
+            content: artifact.videoUrl,
+            tags: ["video", "webm"],
+            createdAt
+          }
+        ]
+      : []),
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "keyframe",
+      title: artifact?.keyframes.length ? `${keyframeCount} sampled keyframes` : "Keyframe set",
+      content: artifact?.keyframes.length
+        ? "Sampled frames from the recorded video for visual reverse engineering."
+        : "Extracted visual beats for layout, typography, motion, color, and composition.",
+      timestampLabel: "00:05, 00:17, 00:31",
+      thumbnail: artifact?.keyframes[0] ?? "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80",
+      tags: ["keyframe", "visual-scan"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "audio",
+      title: "Audio layer",
+      content:
+        artifact?.audioStatus === "placeholder"
+          ? "Audio track captured inside the WebM artifact. Transcription service hookup is next."
+          : "Extracted audio track and detected speaker cadence, pacing, emphasis, and background sound bed.",
+      tags: ["audio", "cadence"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "transcript",
+      title: "Transcript",
+      content:
+        artifact?.transcriptStatus === "placeholder"
+          ? "Transcript placeholder created. The recorded audio is ready for a speech-to-text pipeline."
+          : "Generated a searchable transcript with timestamped concepts and quotable explanation moments.",
+      timestampLabel: "full track",
+      tags: ["transcript"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "prompt",
+      title: "Reverse-engineered style prompt",
+      content: artifact?.keyframes.length
+        ? "Use the sampled keyframes to reverse engineer visual style: composition, spacing, typography, color accents, motion rhythm, interaction tone, and reusable component rules."
+        : "Create a high-fidelity interface in the captured style: identify composition, spacing, typography, interaction tone, color accents, media rhythm, and reusable component rules before generating.",
+      tags: ["prompt", "reverse-engineer"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
+      type: "summary",
+      title: "Cluster summary",
+      content: artifact?.videoUrl
+        ? `One browser recording became a reusable cluster with video, ${keyframeCount} keyframe${keyframeCount === 1 ? "" : "s"}, audio placeholder, transcript placeholder, and generation prompt.`
+        : "One recording became a reusable memory cluster with source, frames, audio, transcript, and generation prompts.",
+      tags: ["summary"],
+      createdAt
+    }
+  ];
+}
+
+function formatBytes(size: number) {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDuration(durationMs: number) {
+  const seconds = Math.max(0, Math.round(durationMs / 1000));
+  return `${seconds}s`;
 }
