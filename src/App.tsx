@@ -8,6 +8,7 @@ import { InspirationMode } from "./components/InspirationMode";
 import { ResearchMode } from "./components/ResearchMode";
 import { ArchiveMode } from "./components/ArchiveMode";
 import { Button } from "./components/ui";
+import { CommandCenter } from "./components/CommandCenter";
 
 const modeOrder: Mode[] = ["project", "growth", "research", "inspiration", "archive"];
 
@@ -37,6 +38,7 @@ export function App() {
             </button>
           ))}
         </nav>
+        <CommandCenter state={state} setState={setState} />
         <Button variant="ghost" onClick={reset}>Reset demo data</Button>
       </aside>
 
