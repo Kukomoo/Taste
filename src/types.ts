@@ -69,6 +69,7 @@ export interface MemoryNode {
 }
 
 export interface RecordingArtifact {
+  artifactId?: string;
   videoUrl?: string;
   videoSizeBytes?: number;
   durationMs?: number;

@@ -325,6 +325,10 @@ select {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.video-placeholder {
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
 .node-chip span {
   color: #93c5fd;
   font-size: 11px;

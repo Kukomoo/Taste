@@ -62,4 +62,20 @@ describe("state actions", () => {
     expect(nodes.find((node) => node.type === "keyframe")?.thumbnail).toBe("data:image/jpeg;base64,frame1");
     expect(nodes.find((node) => node.type === "summary")?.content).toContain("2 keyframes");
   });
+
+  it("uses persistent artifact uri when artifact id is available", () => {
+    const recording = startRecordingCluster(seedState, "Current screen", "Record now");
+    const processed = stopRecordingCluster(recording, "Stop and break it down", {
+      artifactId: "artifact_test",
+      videoUrl: "blob:local-recording",
+      videoSizeBytes: 2048,
+      durationMs: 4200,
+      keyframes: ["data:image/jpeg;base64,frame1"],
+      audioStatus: "placeholder",
+      transcriptStatus: "placeholder"
+    });
+    const artifactNode = processed.nodes.find((node) => node.title === "Persistent video artifact");
+    expect(artifactNode?.content).toBe("artifact://artifact_test");
+    expect(artifactNode?.tags).toContain("indexeddb");
+  });
 });

@@ -120,3 +120,15 @@ Deliverables:
 - Cluster artifact attachment.
 - Permission and fallback states.
 - Tests and browser smoke.
+
+## Sprint 9 - Persistent Recording Artifacts
+
+Goal: Store recorded WebM blobs in IndexedDB so cluster video artifacts can survive refresh.
+
+Deliverables:
+
+- IndexedDB artifact store.
+- Stable `artifact://...` node references.
+- Video artifact restore component.
+- Tests for persistent artifact metadata.
+- Full test/build/smoke verification.

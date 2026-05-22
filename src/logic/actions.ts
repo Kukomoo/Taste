@@ -200,9 +200,9 @@ export function buildRecordingNodes(cluster: MemoryCluster, createdAt: string, a
             id: makeId("node"),
             clusterId: cluster.id,
             type: "source" as const,
-            title: "Local video artifact",
-            content: artifact.videoUrl,
-            tags: ["video", "webm"],
+            title: artifact.artifactId ? "Persistent video artifact" : "Local video artifact",
+            content: artifact.artifactId ? `artifact://${artifact.artifactId}` : artifact.videoUrl,
+            tags: artifact.artifactId ? ["video", "webm", "indexeddb"] : ["video", "webm"],
             createdAt
           }
         ]

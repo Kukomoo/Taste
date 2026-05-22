@@ -1,9 +1,10 @@
 import { startRecordingCluster, stopRecordingCluster } from "../logic/actions";
 import { sampleVideoKeyframes, startBrowserRecording, type BrowserRecording } from "../capture/browserRecorder";
+import { artifactUri, loadRecordingArtifact, parseArtifactUri, saveRecordingArtifact } from "../capture/artifactStore";
 import { activeCluster, clusterNodes, latestCluster } from "../logic/selectors";
 import type { AppState, MemoryNodeType } from "../types";
 import { Button } from "./ui";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const nodeLabels: Record<MemoryNodeType, string> = {
   source: "Source",
@@ -55,8 +56,10 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
       setCaptureStatus("Stopping recorder and sampling keyframes...");
       const recorded = await recorder.stop();
       const keyframes = await sampleVideoKeyframes(recorded.url, 3);
+      const stored = await saveRecordingArtifact(recorded.blob);
       setState(
         stopRecordingCluster(state, "Stop and break it down", {
+          artifactId: stored.id,
           videoUrl: recorded.url,
           videoSizeBytes: recorded.blob.size,
           durationMs: recorded.durationMs,
@@ -65,7 +68,7 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
           transcriptStatus: "placeholder"
         })
       );
-      setCaptureStatus(`Processed local recording into ${keyframes.length} keyframes and clustered nodes.`);
+      setCaptureStatus(`Saved WebM to IndexedDB and processed ${keyframes.length} keyframes into clustered nodes.`);
     } catch (error) {
       setState(stopRecordingCluster(state, "Stop and break it down"));
       setCaptureStatus(error instanceof Error ? `${error.message} Processed fallback nodes instead.` : "Processed fallback nodes instead.");
@@ -121,12 +124,18 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
             <article className={`node-chip node-${node.type}`} key={node.id}>
               <span>{nodeLabels[node.type]}</span>
               <strong>{node.title}</strong>
-              {node.type === "source" && node.content.startsWith("blob:") ? (
-                <video className="node-video" src={node.content} controls muted />
+              {node.type === "source" && (node.content.startsWith("blob:") || node.content.startsWith("artifact://")) ? (
+                <ArtifactVideo uri={node.content} />
               ) : node.thumbnail ? (
                 <img className="node-thumb" src={node.thumbnail} alt="" />
               ) : null}
-              <small>{node.content.startsWith("blob:") ? "Local WebM artifact stored for this browser session." : node.content}</small>
+              <small>
+                {node.content.startsWith("blob:")
+                  ? "Local WebM artifact stored for this browser session."
+                  : node.content.startsWith("artifact://")
+                    ? "Persistent WebM artifact stored in this browser."
+                    : node.content}
+              </small>
             </article>
           ))}
         </div>
@@ -143,3 +152,37 @@ const placeholderNodes: RenderNode[] = [
   { id: "p5", type: "prompt" as const, title: "Prompt", content: "Reverse-engineered style" },
   { id: "p6", type: "summary" as const, title: "Summary", content: "Reusable cluster brief" }
 ];
+
+function ArtifactVideo({ uri }: { uri: string }) {
+  const [src, setSrc] = useState(uri.startsWith("blob:") ? uri : "");
+  const [status, setStatus] = useState(uri.startsWith("blob:") ? "Local session video artifact." : "Loading persistent artifact...");
+
+  useEffect(() => {
+    let objectUrl = "";
+    const artifactId = parseArtifactUri(uri);
+    if (!artifactId) return;
+
+    loadRecordingArtifact(artifactId)
+      .then((record) => {
+        if (!record) {
+          setStatus("Artifact metadata exists, but the local IndexedDB blob was not found.");
+          return;
+        }
+        objectUrl = URL.createObjectURL(record.blob);
+        setSrc(objectUrl);
+        setStatus(`Restored ${Math.max(1, Math.round(record.size / 1024))} KB WebM from IndexedDB.`);
+      })
+      .catch(() => setStatus("Could not restore the local recording artifact."));
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [uri]);
+
+  return (
+    <>
+      {src ? <video className="node-video" src={src} controls muted /> : <div className="node-video video-placeholder" />}
+      <small>{uri.startsWith("artifact://") ? `${status} (${artifactUri(parseArtifactUri(uri) ?? "")})` : status}</small>
+    </>
+  );
+}
