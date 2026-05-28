@@ -60,6 +60,8 @@ export function parseCommand(input: string): ParsedCommand {
   if (
     commandText.startsWith("remember") ||
     commandText.startsWith("what did i save") ||
+    commandText.startsWith("what did i watch") ||
+    commandText.startsWith("what was that") ||
     commandText.startsWith("pull up") ||
     commandText.startsWith("show me what") ||
     commandText.includes("the other day")

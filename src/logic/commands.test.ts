@@ -19,6 +19,7 @@ describe("voice command model", () => {
     expect(parseCommand("save").intent).toBe("save");
     expect(parseCommand("remember that backend video").intent).toBe("recall_memory");
     expect(parseCommand("Hey Kukomo, remember backend video").intent).toBe("recall_memory");
+    expect(parseCommand("What did I watch about backend auth?").intent).toBe("recall_memory");
   });
 
   it("routes save command through active mode", () => {

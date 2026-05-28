@@ -36,6 +36,318 @@ select {
 .accent-magenta { --accent: #e4497d; }
 .accent-slate { --accent: #607389; }
 
+.assistant-shell {
+  --accent: #246bfe;
+  display: block;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(36, 107, 254, 0.10), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef3f8 100%);
+}
+
+.kukomo-home {
+  width: min(1240px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 0;
+}
+
+.kukomo-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 8px 0 18px;
+}
+
+.compact-brand .brand-mark {
+  width: 38px;
+  height: 38px;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.conversation-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.conversation-main,
+.watch-card,
+.memory-section,
+.taste-panel,
+.quiet-details {
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 60px rgba(31, 41, 55, 0.07);
+}
+
+.conversation-main {
+  min-height: 520px;
+  padding: 34px;
+  display: grid;
+  align-content: start;
+}
+
+.conversation-main h1 {
+  max-width: 760px;
+  font-size: 54px;
+  letter-spacing: 0;
+  margin-bottom: 12px;
+}
+
+.conversation-main > p {
+  max-width: 740px;
+  font-size: 17px;
+}
+
+.chat-command {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, #d6dce8);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 14px 40px rgba(36, 107, 254, 0.08);
+}
+
+.chat-command input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 12px 10px;
+  font: inherit;
+  font-size: 16px;
+}
+
+.starter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.starter-row button {
+  border: 1px solid #d6dce8;
+  background: #f8fafc;
+  color: #344054;
+  border-radius: 999px;
+  padding: 8px 11px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.starter-row button:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, #d6dce8);
+  color: var(--accent);
+}
+
+.chat-thread {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.chat-bubble {
+  width: min(720px, 100%);
+  border-radius: 8px;
+  padding: 13px 14px;
+}
+
+.chat-bubble span {
+  display: block;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.chat-bubble p {
+  margin: 0;
+}
+
+.chat-bubble.kukomo {
+  background: color-mix(in srgb, var(--accent) 8%, white);
+  border: 1px solid color-mix(in srgb, var(--accent) 16%, white);
+}
+
+.chat-bubble.user {
+  justify-self: end;
+  background: #111827;
+  border: 1px solid #111827;
+}
+
+.chat-bubble.user span,
+.chat-bubble.user p {
+  color: #fff;
+}
+
+.watch-card {
+  padding: 22px;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  border-top: 4px solid var(--accent);
+}
+
+.watch-card.is-recording {
+  border-top-color: #ff335f;
+  background: linear-gradient(180deg, #fff, #fff6f8);
+}
+
+.watch-card > span,
+.live-recall span,
+.memory-card > span,
+.node-summary span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.watch-card strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.watch-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.memory-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.memory-section,
+.taste-panel,
+.quiet-details {
+  padding: 22px;
+}
+
+.section-heading h2 {
+  margin-bottom: 6px;
+}
+
+.memory-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.memory-card {
+  min-height: 178px;
+  border: 1px solid #e3e7ef;
+  border-radius: 8px;
+  background: #fbfdff;
+  text-align: left;
+  padding: 16px;
+  cursor: pointer;
+}
+
+.memory-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, #d6dce8);
+  box-shadow: 0 12px 34px rgba(31, 41, 55, 0.08);
+}
+
+.memory-card strong,
+.memory-card small {
+  display: block;
+}
+
+.memory-card strong {
+  margin-top: 7px;
+  font-size: 17px;
+}
+
+.memory-card p {
+  margin: 9px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.memory-card small {
+  color: #667085;
+  line-height: 1.35;
+}
+
+.taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.taste-tags span {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, white);
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, white);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.live-recall {
+  margin-top: 16px;
+  border: 1px solid #e3e7ef;
+  border-radius: 8px;
+  background: #fbfdff;
+  padding: 14px;
+}
+
+.live-recall strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.quiet-details {
+  margin-top: 18px;
+}
+
+.node-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.node-summary {
+  border: 1px solid #e3e7ef;
+  border-radius: 8px;
+  background: #fbfdff;
+  padding: 14px;
+}
+
+.node-summary strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.node-summary p {
+  margin: 8px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .sidebar {
   background: rgba(255, 255, 255, 0.86);
   border-right: 1px solid rgba(195, 206, 222, 0.8);
@@ -603,7 +915,7 @@ kbd {
 }
 
 .cluster-detail {
-  width: min(1180px, calc(100vw - 336px));
+  width: min(1240px, calc(100% - 40px));
   margin: 18px auto 0;
   padding: 22px;
   background: #fff;
@@ -1313,6 +1625,30 @@ select {
   .archive-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .kukomo-home {
+    width: calc(100% - 32px);
+  }
+
+  .conversation-hero,
+  .memory-overview,
+  .memory-card-grid,
+  .node-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .conversation-main {
+    min-height: auto;
+    padding: 22px;
+  }
+
+  .conversation-main h1 {
+    font-size: 38px;
+  }
+
+  .chat-command {
+    grid-template-columns: 1fr;
   }
 
   .cluster-detail {
