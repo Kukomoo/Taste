@@ -1,4 +1,4 @@
-import type { AppState, Capture, Mode } from "../types";
+import type { AppState, Capture, Mode, RecallResult } from "../types";
 
 export const modeMeta: Record<Mode, { label: string; verb: string; accent: string }> = {
   project: { label: "Build", verb: "Ship projects faster", accent: "blue" },
@@ -110,4 +110,106 @@ export function clusterNodes(state: AppState, clusterId: string) {
 
 export function latestCluster(state: AppState) {
   return state.clusters[0];
+}
+
+export function recallMemory(state: AppState, query: string): RecallResult[] {
+  const terms = normalizeTerms(query);
+  if (terms.length === 0) return [];
+
+  const clusterResults = state.clusters.map((cluster) => {
+    const nodes = clusterNodes(state, cluster.id);
+    const haystack = [
+      cluster.title,
+      cluster.source,
+      cluster.commandTrail.join(" "),
+      ...nodes.flatMap((node) => [node.title, node.content, node.tags.join(" ")])
+    ].join(" ");
+    const score = scoreText(haystack, terms) + recencyBoost(cluster.startedAt);
+    return {
+      id: cluster.id,
+      kind: "cluster" as const,
+      title: cluster.title,
+      reason: `Matched cluster from ${friendlyDate(cluster.startedAt)} with ${nodes.length} extracted nodes.`,
+      score,
+      highlights: nodes.slice(0, 3).map((node) => `${node.type}: ${node.title}`)
+    };
+  });
+
+  const captureResults = state.captures.map((capture) => {
+    const haystack = [capture.title, capture.note, capture.sourceUrl, capture.tags.join(" ")].join(" ");
+    const score = scoreText(haystack, terms) + recencyBoost(capture.createdAt);
+    return {
+      id: capture.id,
+      kind: "capture" as const,
+      title: capture.title,
+      reason: `Matched saved ${capture.type} from ${friendlyDate(capture.createdAt)}.`,
+      score,
+      highlights: [capture.note ?? capture.tags.join(", ")].filter(Boolean)
+    };
+  });
+
+  const sessionResults = state.sessions.map((session) => {
+    const haystack = [session.title, session.summary, session.keyPages.join(" ")].join(" ");
+    const score = scoreText(haystack, terms) + recencyBoost(session.startedAt);
+    return {
+      id: session.id,
+      kind: "session" as const,
+      title: session.title,
+      reason: `Matched research session from ${friendlyDate(session.startedAt)}.`,
+      score,
+      highlights: [session.summary, ...session.keyPages].filter(Boolean).slice(0, 3)
+    };
+  });
+
+  return [...clusterResults, ...captureResults, ...sessionResults]
+    .filter((result) => result.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+}
+
+export function userUnderstandingProfile(state: AppState) {
+  const tagCounts = new Map<string, number>();
+  for (const capture of state.captures) {
+    for (const tag of capture.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+  for (const node of state.nodes) {
+    for (const tag of node.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+  const topInterests = [...tagCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([tag]) => tag);
+
+  return {
+    topInterests,
+    clusterCount: state.clusters.length,
+    captureCount: state.captures.length,
+    promptCount: state.nodes.filter((node) => node.type === "prompt").length
+  };
+}
+
+function normalizeTerms(query: string) {
+  const stop = new Set(["the", "that", "this", "about", "what", "did", "how", "to", "a", "an", "i", "watched", "remember"]);
+  return query
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((term) => term.length > 1 && !stop.has(term));
+}
+
+function scoreText(text: string, terms: string[]) {
+  const haystack = text.toLowerCase();
+  return terms.reduce((score, term) => score + (haystack.includes(term) ? 3 : 0), 0);
+}
+
+function recencyBoost(isoDate: string) {
+  const ageMs = Date.now() - new Date(isoDate).getTime();
+  const ageDays = ageMs / (1000 * 60 * 60 * 24);
+  if (ageDays < 7) return 2;
+  if (ageDays < 30) return 1;
+  return 0;
+}
+
+function friendlyDate(isoDate: string) {
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(isoDate));
 }

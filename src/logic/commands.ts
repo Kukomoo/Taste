@@ -1,6 +1,6 @@
 import { addCapture, endSession, setMode, startRecordingCluster, startSession, stopRecordingCluster } from "./actions";
 import { exportAllData } from "./export";
-import { randomInspiration, randomProjectMemory } from "./selectors";
+import { randomInspiration, randomProjectMemory, recallMemory } from "./selectors";
 import type { AppState, Mode } from "../types";
 
 export type CommandIntent =
@@ -10,6 +10,7 @@ export type CommandIntent =
   | "start_recording"
   | "stop_recording"
   | "random_memory"
+  | "recall_memory"
   | "switch_mode"
   | "export_all"
   | "unknown";
@@ -17,6 +18,7 @@ export type CommandIntent =
 export interface ParsedCommand {
   intent: CommandIntent;
   mode?: Mode;
+  query?: string;
 }
 
 export interface CommandResult {
@@ -40,23 +42,33 @@ const modeWords: Record<string, Mode> = {
 
 export function parseCommand(input: string): ParsedCommand {
   const normalized = input.toLowerCase().replace(/[^\w\s]/g, "").trim();
-  if (["save", "save this", "capture"].includes(normalized) || normalized.includes("save this")) return { intent: "save" };
+  const commandText = normalized.replace(/^(hey|ok|okay)\s+(taste|kukomo)\s*/, "").trim();
+  if (["save", "save this", "capture"].includes(commandText) || commandText.includes("save this")) return { intent: "save" };
   if (
-    normalized === "record" ||
-    normalized === "record youtube" ||
-    normalized === "record screen" ||
-    normalized.includes("start recording") ||
-    normalized.includes("record now")
+    commandText === "record" ||
+    commandText === "record youtube" ||
+    commandText === "record screen" ||
+    commandText.includes("start recording") ||
+    commandText.includes("record now")
   ) {
     return { intent: "start_recording" };
   }
-  if (normalized === "stop" || normalized === "stop recording" || normalized.includes("stop recording") || normalized.includes("stop and break")) return { intent: "stop_recording" };
-  if (normalized.includes("start session")) return { intent: "start_session" };
-  if (normalized.includes("end session")) return { intent: "end_session" };
-  if (normalized === "random" || normalized.includes("random memory") || normalized.includes("random inspiration")) return { intent: "random_memory" };
-  if (normalized.includes("export")) return { intent: "export_all" };
-  if (normalized.includes("switch") || normalized.startsWith("go ") || normalized.startsWith("open ")) {
-    const mode = Object.entries(modeWords).find(([word]) => normalized.includes(word))?.[1];
+  if (commandText === "stop" || commandText === "stop recording" || commandText.includes("stop recording") || commandText.includes("stop and break")) return { intent: "stop_recording" };
+  if (commandText.includes("start session")) return { intent: "start_session" };
+  if (commandText.includes("end session")) return { intent: "end_session" };
+  if (commandText === "random" || commandText.includes("random memory") || commandText.includes("random inspiration")) return { intent: "random_memory" };
+  if (
+    commandText.startsWith("remember") ||
+    commandText.startsWith("what did i save") ||
+    commandText.startsWith("pull up") ||
+    commandText.startsWith("show me what") ||
+    commandText.includes("the other day")
+  ) {
+    return { intent: "recall_memory", query: input };
+  }
+  if (commandText.includes("export")) return { intent: "export_all" };
+  if (commandText.includes("switch") || commandText.startsWith("go ") || commandText.startsWith("open ")) {
+    const mode = Object.entries(modeWords).find(([word]) => commandText.includes(word))?.[1];
     return mode ? { intent: "switch_mode", mode } : { intent: "unknown" };
   }
   return { intent: "unknown" };
@@ -100,6 +112,16 @@ function runParsedCommand(state: AppState, input: string, parsed: ParsedCommand)
     case "random_memory": {
       const memory = state.activeMode === "inspiration" ? randomInspiration(state) : randomProjectMemory(state);
       return { state, message: memory ? `Random memory: ${memory.title}` : "No memory available yet." };
+    }
+    case "recall_memory": {
+      const results = recallMemory(state, parsed.query ?? input);
+      const top = results[0];
+      return {
+        state: top?.kind === "cluster" ? { ...state, focusedClusterId: top.id } : state,
+        message: top
+          ? `I found ${top.kind}: ${top.title}. ${top.reason}`
+          : "I could not find that yet. Record or save more context and ask again."
+      };
     }
     case "switch_mode":
       return { state: setMode(state, parsed.mode!), message: `Switched to ${parsed.mode}.` };

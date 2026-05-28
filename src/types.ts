@@ -109,6 +109,15 @@ export interface CommandHistoryEntry {
   createdAt: string;
 }
 
+export interface RecallResult {
+  id: string;
+  kind: "cluster" | "capture" | "session";
+  title: string;
+  reason: string;
+  score: number;
+  highlights: string[];
+}
+
 export interface AppState {
   activeMode: Mode;
   activeProjectId: string;
@@ -119,6 +128,7 @@ export interface AppState {
   clusters: MemoryCluster[];
   nodes: MemoryNode[];
   activeClusterId?: string;
+  focusedClusterId?: string;
   currentSessionId?: string;
   voiceCommands: VoiceCommands;
   commandHistory: CommandHistoryEntry[];

@@ -9,7 +9,8 @@ const suggestions = [
   { label: "Stop and process", command: "stop", detail: "Stop recording and generate source, keyframe, audio, transcript, OCR, prompt, and summary nodes." },
   { label: "Switch to Create", command: "switch create", detail: "Open Inspiration Mode." },
   { label: "Random memory", command: "random", detail: "Surface a project or inspiration memory." },
-  { label: "Save current context", command: "save", detail: "Save into the current mode." }
+  { label: "Save current context", command: "save", detail: "Save into the current mode." },
+  { label: "Recall backend video", command: "remember that backend video I watched the other day", detail: "Ask Kukomo to pull a cluster from natural language." }
 ];
 
 export function CommandPalette({

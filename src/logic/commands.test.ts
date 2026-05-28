@@ -17,6 +17,8 @@ describe("voice command model", () => {
     expect(parseCommand("switch create")).toEqual({ intent: "switch_mode", mode: "inspiration" });
     expect(parseCommand("random").intent).toBe("random_memory");
     expect(parseCommand("save").intent).toBe("save");
+    expect(parseCommand("remember that backend video").intent).toBe("recall_memory");
+    expect(parseCommand("Hey Kukomo, remember backend video").intent).toBe("recall_memory");
   });
 
   it("routes save command through active mode", () => {
@@ -71,5 +73,11 @@ describe("voice command model", () => {
       state = runCommand(state, "random").state;
     }
     expect(state.commandHistory).toHaveLength(20);
+  });
+
+  it("recalls a matching memory cluster from natural language", () => {
+    const output = runCommand(seedState, "remember that video i watched the other day about how to build the backend");
+    expect(output.message).toContain("Backend build video");
+    expect(output.state.focusedClusterId).toBe("cluster_2");
   });
 });

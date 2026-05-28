@@ -5,12 +5,16 @@ import type { AppState, MemoryCluster, MemoryNode } from "../types";
 const nodeOrder = ["source", "keyframe", "audio", "transcript", "ocr", "prompt", "summary"];
 
 export function ClusterDetail({ state }: { state: AppState }) {
-  const [selectedClusterId, setSelectedClusterId] = useState(latestCluster(state)?.id ?? "");
+  const [selectedClusterId, setSelectedClusterId] = useState(state.focusedClusterId ?? latestCluster(state)?.id ?? "");
   const newestClusterId = latestCluster(state)?.id ?? "";
 
   useEffect(() => {
-    if (newestClusterId) setSelectedClusterId(newestClusterId);
-  }, [newestClusterId]);
+    if (state.focusedClusterId) {
+      setSelectedClusterId(state.focusedClusterId);
+    } else if (newestClusterId) {
+      setSelectedClusterId(newestClusterId);
+    }
+  }, [newestClusterId, state.focusedClusterId]);
 
   const selectedCluster = state.clusters.find((cluster) => cluster.id === selectedClusterId) ?? latestCluster(state);
   const nodes = useMemo(

@@ -136,6 +136,17 @@ export const seedState: AppState = {
       endedAt: "2026-05-21T18:07:00.000Z",
       nodeIds: ["n1", "n2", "n3", "n4", "n5"],
       commandTrail: ["Hey Kukomo, start recording this YouTube video now", "Kukomo, stop and break it down"]
+    },
+    {
+      id: "cluster_2",
+      title: "Backend build video - API auth and storage",
+      source: "https://youtube.com/watch?v=demo-backend-build",
+      projectId: "p1",
+      status: "ready",
+      startedAt: "2026-05-23T14:00:00.000Z",
+      endedAt: "2026-05-23T14:18:00.000Z",
+      nodeIds: ["n6", "n7", "n8", "n9", "n10", "n11", "n12"],
+      commandTrail: ["Hey Kukomo, record this backend video", "Stop and break it down"]
     }
   ],
   nodes: [
@@ -186,6 +197,72 @@ export const seedState: AppState = {
       content: "Design a calm analytics dashboard with sparse navigation, confident typography, cool neutral surfaces, precise blue status accents, generous chart spacing, and subtle command-first assistant controls.",
       tags: ["prompt", "style"],
       createdAt: "2026-05-21T18:06:00.000Z"
+    },
+    {
+      id: "n6",
+      clusterId: "cluster_2",
+      type: "source",
+      title: "Original backend YouTube source",
+      content: "Captured a backend build walkthrough covering API routes, auth middleware, database storage, and deployment boundaries.",
+      tags: ["youtube", "backend", "api", "auth", "storage"],
+      createdAt: "2026-05-23T14:00:00.000Z"
+    },
+    {
+      id: "n7",
+      clusterId: "cluster_2",
+      type: "keyframe",
+      title: "Backend architecture diagram",
+      content: "Keyframe shows client app calling API routes, auth guard, storage provider, and database tables.",
+      timestampLabel: "04:12",
+      thumbnail: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80",
+      tags: ["backend", "architecture", "diagram"],
+      createdAt: "2026-05-23T14:04:00.000Z"
+    },
+    {
+      id: "n8",
+      clusterId: "cluster_2",
+      type: "audio",
+      title: "Backend explanation audio",
+      content: "Speaker emphasized keeping auth, persistence, and background processing as separate boundaries.",
+      tags: ["audio", "backend", "explanation"],
+      createdAt: "2026-05-23T14:06:00.000Z"
+    },
+    {
+      id: "n9",
+      clusterId: "cluster_2",
+      type: "transcript",
+      title: "Transcript excerpt",
+      content: "Start with a thin API layer, put user identity in middleware, persist records through a storage provider, and keep jobs asynchronous.",
+      timestampLabel: "08:41",
+      tags: ["transcript", "backend", "api", "middleware"],
+      createdAt: "2026-05-23T14:09:00.000Z"
+    },
+    {
+      id: "n10",
+      clusterId: "cluster_2",
+      type: "ocr",
+      title: "On-screen code OCR",
+      content: "Detected terms: route handler, auth middleware, storage adapter, jobs queue, database schema, signed upload URL.",
+      tags: ["ocr", "backend", "code"],
+      createdAt: "2026-05-23T14:11:00.000Z"
+    },
+    {
+      id: "n11",
+      clusterId: "cluster_2",
+      type: "prompt",
+      title: "Backend implementation prompt",
+      content: "Design a backend with API routes, auth middleware, storage provider abstraction, async processing queue, database schema, and clear deployment boundaries.",
+      tags: ["prompt", "backend", "implementation"],
+      createdAt: "2026-05-23T14:14:00.000Z"
+    },
+    {
+      id: "n12",
+      clusterId: "cluster_2",
+      type: "summary",
+      title: "Backend video summary",
+      content: "Useful for remembering how to build the backend of an app: API first, auth middleware, storage provider, database schema, and background jobs.",
+      tags: ["summary", "backend", "build"],
+      createdAt: "2026-05-23T14:18:00.000Z"
     }
   ],
   voiceCommands: {
