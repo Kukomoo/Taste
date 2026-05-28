@@ -194,5 +194,21 @@ export const seedState: AppState = {
     startSession: "start session",
     endSession: "end session",
     randomMemory: "random memory"
-  }
+  },
+  commandHistory: [
+    {
+      id: "cmd_1",
+      input: "Hey Kukomo, start recording this YouTube video now",
+      intent: "start_recording",
+      message: "Recording YouTube video. Tracking frames, audio, transcript, and prompts.",
+      createdAt: "2026-05-21T18:00:00.000Z"
+    },
+    {
+      id: "cmd_2",
+      input: "Stop and break it down",
+      intent: "stop_recording",
+      message: "Recording stopped. Cluster generated with source, keyframes, audio, transcript, prompt, and summary nodes.",
+      createdAt: "2026-05-21T18:07:00.000Z"
+    }
+  ]
 };

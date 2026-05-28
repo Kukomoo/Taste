@@ -19,6 +19,12 @@ export interface ParsedCommand {
   mode?: Mode;
 }
 
+export interface CommandResult {
+  state: AppState;
+  message: string;
+  exportText?: string;
+}
+
 const modeWords: Record<string, Mode> = {
   build: "project",
   project: "project",
@@ -34,22 +40,38 @@ const modeWords: Record<string, Mode> = {
 
 export function parseCommand(input: string): ParsedCommand {
   const normalized = input.toLowerCase().replace(/[^\w\s]/g, "").trim();
-  if (normalized.includes("save this")) return { intent: "save" };
-  if (normalized.includes("start recording") || normalized.includes("record now")) return { intent: "start_recording" };
-  if (normalized.includes("stop recording") || normalized === "stop" || normalized.includes("stop and break")) return { intent: "stop_recording" };
+  if (["save", "save this", "capture"].includes(normalized) || normalized.includes("save this")) return { intent: "save" };
+  if (
+    normalized === "record" ||
+    normalized === "record youtube" ||
+    normalized === "record screen" ||
+    normalized.includes("start recording") ||
+    normalized.includes("record now")
+  ) {
+    return { intent: "start_recording" };
+  }
+  if (normalized === "stop" || normalized === "stop recording" || normalized.includes("stop recording") || normalized.includes("stop and break")) return { intent: "stop_recording" };
   if (normalized.includes("start session")) return { intent: "start_session" };
   if (normalized.includes("end session")) return { intent: "end_session" };
-  if (normalized.includes("random memory") || normalized.includes("random inspiration")) return { intent: "random_memory" };
+  if (normalized === "random" || normalized.includes("random memory") || normalized.includes("random inspiration")) return { intent: "random_memory" };
   if (normalized.includes("export")) return { intent: "export_all" };
-  if (normalized.includes("switch")) {
+  if (normalized.includes("switch") || normalized.startsWith("go ") || normalized.startsWith("open ")) {
     const mode = Object.entries(modeWords).find(([word]) => normalized.includes(word))?.[1];
     return mode ? { intent: "switch_mode", mode } : { intent: "unknown" };
   }
   return { intent: "unknown" };
 }
 
-export function runCommand(state: AppState, input: string): { state: AppState; message: string; exportText?: string } {
+export function runCommand(state: AppState, input: string): CommandResult {
   const parsed = parseCommand(input);
+  const result = runParsedCommand(state, input, parsed);
+  return {
+    ...result,
+    state: appendCommandHistory(result.state, input, parsed.intent, result.message)
+  };
+}
+
+function runParsedCommand(state: AppState, input: string, parsed: ParsedCommand): CommandResult {
   switch (parsed.intent) {
     case "save":
       return {
@@ -86,4 +108,20 @@ export function runCommand(state: AppState, input: string): { state: AppState; m
     default:
       return { state, message: "Command not recognized yet." };
   }
+}
+
+function appendCommandHistory(state: AppState, input: string, intent: CommandIntent, message: string): AppState {
+  return {
+    ...state,
+    commandHistory: [
+      {
+        id: `cmd_${Math.random().toString(36).slice(2, 9)}`,
+        input,
+        intent,
+        message,
+        createdAt: new Date().toISOString()
+      },
+      ...(state.commandHistory ?? [])
+    ].slice(0, 20)
+  };
 }

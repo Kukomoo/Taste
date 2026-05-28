@@ -21,6 +21,7 @@ export function CommandCenter({ state, setState }: { state: AppState; setState: 
         <Button variant="secondary" onClick={submit}>Run</Button>
       </div>
       <p>{result}</p>
+      <small className="command-hint">Open the full palette with ⌘K or Ctrl+K.</small>
       <div className="command-examples">
         <button onClick={() => setCommand("Hey Kukomo, start recording this YouTube video now")}>YouTube</button>
         <button onClick={() => setCommand("Record now")}>Record</button>

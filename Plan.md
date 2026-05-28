@@ -132,3 +132,15 @@ Deliverables:
 - Video artifact restore component.
 - Tests for persistent artifact metadata.
 - Full test/build/smoke verification.
+
+## Sprint 10 - Command Palette and Keyboard Control
+
+Goal: Make Kukomo fully command-native with keyboard aliases, command history, and a `Cmd+K` / `Ctrl+K` palette.
+
+Deliverables:
+
+- Command palette component.
+- Short command aliases.
+- Command history in app state.
+- Suggested commands and recent trail.
+- Tests and browser verification.

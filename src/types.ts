@@ -98,6 +98,14 @@ export interface VoiceCommands {
   randomMemory: string;
 }
 
+export interface CommandHistoryEntry {
+  id: string;
+  input: string;
+  intent: string;
+  message: string;
+  createdAt: string;
+}
+
 export interface AppState {
   activeMode: Mode;
   activeProjectId: string;
@@ -110,4 +118,5 @@ export interface AppState {
   activeClusterId?: string;
   currentSessionId?: string;
   voiceCommands: VoiceCommands;
+  commandHistory: CommandHistoryEntry[];
 }

@@ -12,9 +12,24 @@ describe("voice command model", () => {
     expect(parseCommand("Stop and break it down").intent).toBe("stop_recording");
   });
 
+  it("parses compact keyboard aliases", () => {
+    expect(parseCommand("record youtube").intent).toBe("start_recording");
+    expect(parseCommand("switch create")).toEqual({ intent: "switch_mode", mode: "inspiration" });
+    expect(parseCommand("random").intent).toBe("random_memory");
+    expect(parseCommand("save").intent).toBe("save");
+  });
+
   it("routes save command through active mode", () => {
     const output = runCommand(seedState, "Hey TASTE, save this");
     expect(output.state.captures[0].title).toContain("Voice-saved");
+  });
+
+  it("records command history after running a command", () => {
+    const output = runCommand(seedState, "record youtube");
+    expect(output.state.commandHistory[0]).toMatchObject({
+      input: "record youtube",
+      intent: "start_recording"
+    });
   });
 
   it("starts and ends sessions", () => {
@@ -47,5 +62,13 @@ describe("voice command model", () => {
       "prompt",
       "summary"
     ]);
+  });
+
+  it("caps command history to recent entries", () => {
+    let state = seedState;
+    for (let index = 0; index < 25; index += 1) {
+      state = runCommand(state, "random").state;
+    }
+    expect(state.commandHistory).toHaveLength(20);
   });
 });

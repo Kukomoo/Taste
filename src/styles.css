@@ -115,6 +115,11 @@ select {
   font-size: 12px;
 }
 
+.command-hint {
+  color: #667085;
+  font-size: 11px;
+}
+
 .command-examples {
   display: flex;
   gap: 6px;
@@ -161,6 +166,153 @@ select {
 
 .content {
   min-width: 0;
+}
+
+.palette-trigger {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 20;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, #dbe3ef);
+  background: #111827;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 18px 50px rgba(31, 41, 55, 0.22);
+  cursor: pointer;
+}
+
+.palette-trigger span {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+kbd {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(15, 23, 42, 0.48);
+  display: grid;
+  place-items: start center;
+  padding: 8vh 18px 18px;
+}
+
+.command-palette {
+  width: min(920px, 100%);
+  max-height: 84vh;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #101827;
+  color: #fff;
+  box-shadow: 0 26px 90px rgba(0, 0, 0, 0.32);
+  padding: 18px;
+}
+
+.command-palette label,
+.command-palette h2 {
+  display: block;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.palette-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.palette-input-row input {
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+}
+
+.palette-input-row input::placeholder {
+  color: #94a3b8;
+}
+
+.palette-result {
+  color: #cbd7ea;
+  margin: 12px 0 16px;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+  gap: 14px;
+}
+
+.palette-list,
+.history-list {
+  display: grid;
+  gap: 8px;
+}
+
+.palette-list button,
+.history-list button {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  text-align: left;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.palette-list button:hover,
+.history-list button:hover {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.14);
+}
+
+.palette-list strong,
+.palette-list code,
+.palette-list span,
+.history-list strong,
+.history-list span {
+  display: block;
+}
+
+.palette-list code {
+  width: fit-content;
+  margin: 7px 0;
+  color: #dbeafe;
+  background: rgba(96, 165, 250, 0.14);
+  border-radius: 999px;
+  padding: 4px 7px;
+  font-size: 12px;
+}
+
+.palette-list span,
+.history-list span {
+  color: #cbd7ea;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.history-list strong {
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
 .assistant-cockpit {
@@ -970,5 +1122,15 @@ select {
   .archive-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .palette-grid,
+  .palette-input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .palette-trigger {
+    right: 14px;
+    bottom: 14px;
   }
 }
