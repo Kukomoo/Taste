@@ -2,6 +2,9 @@ import { startRecordingCluster, stopRecordingCluster } from "../logic/actions";
 import { sampleVideoKeyframes, startBrowserRecording, type BrowserRecording } from "../capture/browserRecorder";
 import { artifactUri, loadRecordingArtifact, parseArtifactUri, saveRecordingArtifact } from "../capture/artifactStore";
 import { activeCluster, clusterNodes, latestCluster } from "../logic/selectors";
+import { extractTextFromKeyframes } from "../extraction/ocr";
+import { generateStylePrompt } from "../extraction/promptGenerator";
+import { transcribeRecording } from "../extraction/transcription";
 import type { AppState, MemoryNodeType } from "../types";
 import { Button } from "./ui";
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +14,7 @@ const nodeLabels: Record<MemoryNodeType, string> = {
   keyframe: "Keyframes",
   audio: "Audio",
   transcript: "Transcript",
+  ocr: "OCR",
   prompt: "Prompt",
   summary: "Summary"
 };
@@ -57,6 +61,18 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
       const recorded = await recorder.stop();
       const keyframes = await sampleVideoKeyframes(recorded.url, 3);
       const stored = await saveRecordingArtifact(recorded.blob);
+      const transcript = await transcribeRecording({
+        artifactId: stored.id,
+        durationMs: recorded.durationMs,
+        source: recording?.source ?? "Current recording"
+      });
+      const ocr = await extractTextFromKeyframes(keyframes);
+      const promptText = generateStylePrompt({
+        source: recording?.source ?? "Current recording",
+        transcriptText: transcript.text,
+        ocrText: ocr.text,
+        keyframeCount: keyframes.length
+      });
       setState(
         stopRecordingCluster(state, "Stop and break it down", {
           artifactId: stored.id,
@@ -64,8 +80,11 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
           videoSizeBytes: recorded.blob.size,
           durationMs: recorded.durationMs,
           keyframes,
+          transcriptText: transcript.text,
+          ocrText: ocr.text,
+          promptText,
           audioStatus: "placeholder",
-          transcriptStatus: "placeholder"
+          transcriptStatus: transcript.status
         })
       );
       setCaptureStatus(`Saved WebM to IndexedDB and processed ${keyframes.length} keyframes into clustered nodes.`);
@@ -88,7 +107,7 @@ export function AssistantCockpit({ state, setState }: { state: AppState; setStat
         <h1>Say it or type it. Kukomo tracks the trail.</h1>
         <p>
           Record a YouTube video, screen flow, or research moment. When you stop, Kukomo breaks it into a cluster:
-          frames, audio, transcript, prompt, source, and summary nodes.
+          frames, audio, transcript, OCR, prompt, source, and summary nodes.
         </p>
         <div className="command-pills" aria-label="Example commands">
           <code>Hey Kukomo, start recording this YouTube video now</code>
@@ -149,8 +168,9 @@ const placeholderNodes: RenderNode[] = [
   { id: "p2", type: "keyframe" as const, title: "Keyframes", content: "Visual style scans" },
   { id: "p3", type: "audio" as const, title: "Audio", content: "Audio and pacing" },
   { id: "p4", type: "transcript" as const, title: "Transcript", content: "Timestamped text" },
-  { id: "p5", type: "prompt" as const, title: "Prompt", content: "Reverse-engineered style" },
-  { id: "p6", type: "summary" as const, title: "Summary", content: "Reusable cluster brief" }
+  { id: "p5", type: "ocr" as const, title: "OCR", content: "Text from keyframes" },
+  { id: "p6", type: "prompt" as const, title: "Prompt", content: "Reverse-engineered style" },
+  { id: "p7", type: "summary" as const, title: "Summary", content: "Reusable cluster brief" }
 ];
 
 function ArtifactVideo({ uri }: { uri: string }) {

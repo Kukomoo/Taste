@@ -6,7 +6,7 @@ import { Button } from "./ui";
 const suggestions = [
   { label: "Record YouTube", command: "record youtube", detail: "Start a capture cluster for a YouTube or video reference." },
   { label: "Record screen", command: "record screen", detail: "Start recording the current screen flow." },
-  { label: "Stop and process", command: "stop", detail: "Stop recording and generate source, keyframe, audio, transcript, prompt, and summary nodes." },
+  { label: "Stop and process", command: "stop", detail: "Stop recording and generate source, keyframe, audio, transcript, OCR, prompt, and summary nodes." },
   { label: "Switch to Create", command: "switch create", detail: "Open Inspiration Mode." },
   { label: "Random memory", command: "random", detail: "Surface a project or inspiration memory." },
   { label: "Save current context", command: "save", detail: "Save into the current mode." }

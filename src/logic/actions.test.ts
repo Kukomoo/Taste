@@ -43,8 +43,8 @@ describe("state actions", () => {
     const recording = startRecordingCluster(seedState, "YouTube video", "Hey Kukomo, start recording this YouTube video now");
     const processed = stopRecordingCluster(recording, "Stop and break it down");
     expect(processed.clusters[0].status).toBe("ready");
-    expect(processed.clusters[0].nodeIds).toHaveLength(6);
-    expect(new Set(processed.nodes.slice(0, 6).map((node) => node.clusterId))).toEqual(new Set([processed.clusters[0].id]));
+    expect(processed.clusters[0].nodeIds).toHaveLength(7);
+    expect(new Set(processed.nodes.slice(0, 7).map((node) => node.clusterId))).toEqual(new Set([processed.clusters[0].id]));
   });
 
   it("attaches browser recording artifact details to processed nodes", () => {
@@ -60,6 +60,7 @@ describe("state actions", () => {
     const nodes = processed.nodes.filter((node) => node.clusterId === processed.clusters[0].id);
     expect(nodes.some((node) => node.title === "Local video artifact" && node.content === "blob:local-recording")).toBe(true);
     expect(nodes.find((node) => node.type === "keyframe")?.thumbnail).toBe("data:image/jpeg;base64,frame1");
+    expect(nodes.find((node) => node.type === "ocr")?.content).toContain("OCR placeholder");
     expect(nodes.find((node) => node.type === "summary")?.content).toContain("2 keyframes");
   });
 

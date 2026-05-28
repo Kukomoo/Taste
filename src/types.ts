@@ -2,7 +2,7 @@ export type Mode = "project" | "growth" | "research" | "inspiration" | "archive"
 
 export type CaptureType = "link" | "screenshot" | "clip" | "note" | "voice" | "file";
 
-export type MemoryNodeType = "source" | "keyframe" | "audio" | "transcript" | "prompt" | "summary";
+export type MemoryNodeType = "source" | "keyframe" | "audio" | "transcript" | "ocr" | "prompt" | "summary";
 
 export type ProjectStatus = "active" | "paused" | "archived";
 
@@ -74,6 +74,9 @@ export interface RecordingArtifact {
   videoSizeBytes?: number;
   durationMs?: number;
   keyframes: string[];
+  transcriptText?: string;
+  ocrText?: string;
+  promptText?: string;
   transcriptStatus: "placeholder" | "ready";
   audioStatus: "placeholder" | "ready";
 }

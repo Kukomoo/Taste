@@ -53,12 +53,13 @@ describe("voice command model", () => {
     const cluster = processed.clusters[0];
     expect(processed.activeClusterId).toBeUndefined();
     expect(cluster.status).toBe("ready");
-    expect(cluster.nodeIds).toHaveLength(6);
+    expect(cluster.nodeIds).toHaveLength(7);
     expect(processed.nodes.filter((node) => node.clusterId === cluster.id).map((node) => node.type)).toEqual([
       "source",
       "keyframe",
       "audio",
       "transcript",
+      "ocr",
       "prompt",
       "summary"
     ]);

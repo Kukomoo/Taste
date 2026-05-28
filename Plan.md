@@ -144,3 +144,17 @@ Deliverables:
 - Command history in app state.
 - Suggested commands and recent trail.
 - Tests and browser verification.
+
+## Sprint 11 - Extraction, Cluster Detail, Backend Boundary, Extension Wrapper
+
+Goal: Work through the remaining MVP hardening list in order.
+
+Deliverables:
+
+- Manual real screen-recording QA checklist.
+- Transcription pipeline boundary.
+- OCR/keyframe text extraction boundary.
+- Cluster detail inspector.
+- Prompt generation from transcript and OCR context.
+- Backend storage provider boundary.
+- Chrome extension MV3 wrapper scaffold.

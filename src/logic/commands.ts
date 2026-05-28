@@ -96,7 +96,7 @@ function runParsedCommand(state: AppState, input: string, parsed: ParsedCommand)
       return { state: startRecordingCluster(state, source, input), message: `Recording ${source}. Tracking frames, audio, transcript, and prompts.` };
     }
     case "stop_recording":
-      return { state: stopRecordingCluster(state, input), message: "Recording stopped. Cluster generated with source, keyframes, audio, transcript, prompt, and summary nodes." };
+      return { state: stopRecordingCluster(state, input), message: "Recording stopped. Cluster generated with source, keyframes, audio, transcript, OCR, prompt, and summary nodes." };
     case "random_memory": {
       const memory = state.activeMode === "inspiration" ? randomInspiration(state) : randomProjectMemory(state);
       return { state, message: memory ? `Random memory: ${memory.title}` : "No memory available yet." };

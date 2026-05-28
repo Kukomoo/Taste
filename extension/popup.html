@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kukomo</title>
+    <style>
+      body {
+        width: 320px;
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        color: #172033;
+      }
+      main {
+        padding: 14px;
+      }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 8px;
+        background: #246bfe;
+        color: white;
+        font-weight: 800;
+        padding: 10px 12px;
+      }
+      p {
+        color: #566176;
+        line-height: 1.4;
+      }
+      code {
+        display: block;
+        background: #eef3f8;
+        border-radius: 8px;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Kukomo</h1>
+      <p>Capture the active tab into the web app. Full extension wiring comes after backend auth.</p>
+      <button id="capture">Get active tab</button>
+      <code id="result">Ready</code>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>

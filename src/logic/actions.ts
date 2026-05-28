@@ -238,9 +238,10 @@ export function buildRecordingNodes(cluster: MemoryCluster, createdAt: string, a
       type: "transcript",
       title: "Transcript",
       content:
-        artifact?.transcriptStatus === "placeholder"
+        artifact?.transcriptText ??
+        (artifact?.transcriptStatus === "placeholder"
           ? "Transcript placeholder created. The recorded audio is ready for a speech-to-text pipeline."
-          : "Generated a searchable transcript with timestamped concepts and quotable explanation moments.",
+          : "Generated a searchable transcript with timestamped concepts and quotable explanation moments."),
       timestampLabel: "full track",
       tags: ["transcript"],
       createdAt
@@ -248,11 +249,20 @@ export function buildRecordingNodes(cluster: MemoryCluster, createdAt: string, a
     {
       id: makeId("node"),
       clusterId: cluster.id,
+      type: "ocr",
+      title: "Keyframe OCR",
+      content: artifact?.ocrText ?? "OCR placeholder created. Sampled keyframes are ready for text extraction.",
+      tags: ["ocr", "keyframe-text"],
+      createdAt
+    },
+    {
+      id: makeId("node"),
+      clusterId: cluster.id,
       type: "prompt",
       title: "Reverse-engineered style prompt",
-      content: artifact?.keyframes.length
+      content: artifact?.promptText ?? (artifact?.keyframes.length
         ? "Use the sampled keyframes to reverse engineer visual style: composition, spacing, typography, color accents, motion rhythm, interaction tone, and reusable component rules."
-        : "Create a high-fidelity interface in the captured style: identify composition, spacing, typography, interaction tone, color accents, media rhythm, and reusable component rules before generating.",
+        : "Create a high-fidelity interface in the captured style: identify composition, spacing, typography, interaction tone, color accents, media rhythm, and reusable component rules before generating."),
       tags: ["prompt", "reverse-engineer"],
       createdAt
     },

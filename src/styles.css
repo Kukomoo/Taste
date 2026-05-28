@@ -481,6 +481,71 @@ kbd {
   border: 1px dashed rgba(255, 255, 255, 0.22);
 }
 
+.cluster-detail {
+  width: min(1180px, calc(100vw - 336px));
+  margin: 18px auto 0;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  box-shadow: 0 16px 50px rgba(31, 41, 55, 0.06);
+}
+
+.cluster-detail-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: start;
+}
+
+.cluster-detail-header h2 {
+  margin-bottom: 6px;
+}
+
+.cluster-detail-header p {
+  margin-bottom: 0;
+}
+
+.cluster-node-table {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.cluster-node-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.35fr) minmax(0, 1fr) minmax(120px, 0.24fr);
+  gap: 14px;
+  align-items: start;
+  border: 1px solid #e3e7ef;
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfdff;
+}
+
+.cluster-node-row span,
+.cluster-node-row strong,
+.cluster-node-row small {
+  display: block;
+}
+
+.cluster-node-row span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.cluster-node-row p {
+  margin-bottom: 0;
+}
+
+.cluster-node-row small {
+  color: #667085;
+  line-height: 1.35;
+}
+
 .node-chip span {
   color: #93c5fd;
   font-size: 11px;
@@ -1121,6 +1186,16 @@ select {
 
   .archive-row {
     align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cluster-detail {
+    width: calc(100% - 32px);
+  }
+
+  .cluster-detail-header,
+  .cluster-node-row {
+    grid-template-columns: 1fr;
     flex-direction: column;
   }
 

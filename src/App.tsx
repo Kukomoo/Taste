@@ -11,6 +11,7 @@ import { Button } from "./components/ui";
 import { CommandCenter } from "./components/CommandCenter";
 import { AssistantCockpit } from "./components/AssistantCockpit";
 import { CommandPalette } from "./components/CommandPalette";
+import { ClusterDetail } from "./components/ClusterDetail";
 
 const modeOrder: Mode[] = ["project", "growth", "research", "inspiration", "archive"];
 
@@ -50,6 +51,7 @@ export function App() {
           <span>Voice and keyboard commands create traceable clusters. Nothing records until you explicitly trigger Kukomo.</span>
         </section>
         <AssistantCockpit state={state} setState={setState} />
+        <ClusterDetail state={state} />
         <CommandPalette state={state} setState={setState} />
         {state.activeMode === "project" ? (
           <ProjectMode state={state} setState={setState} />
